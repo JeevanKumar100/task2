@@ -4,14 +4,16 @@ FROM node:18
 # Set working directory inside container
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json (if exists)
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy app source code
+# Copy the rest of the app source code
 COPY . .
 
-# Expose port (optional)
+# Expose port your app uses
 EXPOSE 3000
 
 # Start the app
