@@ -1,0 +1,31 @@
+pipeline {
+  agent any
+  environment {
+    IMAGE = "yourdockerhubuser/your-repo"  // replace with your Docker Hub namespace/repo
+    CRED_ID = "dockerhub-creds"            // the Jenkins credential ID you created
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    stage('Build & Push') {
+      steps {
+        script {
+          // Use Docker Pipeline plugin to login to registry and run build/push
+          docker.withRegistry('https://index.docker.io/v1/', CRED_ID) {
+            def built = docker.build("${IMAGE}:${env.BUILD_NUMBER}")
+            built.push()            // pushes ${BUILD_NUMBER}
+            built.push('latest')    // pushes 'latest' tag
+          }
+        }
+      }
+    }
+  }
+  post {
+    always {
+      echo "Done."
+    }
+  }
+}
